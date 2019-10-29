@@ -13,7 +13,8 @@ public class ApexMoqTests{
         System.assertEquals(3, call.timesCalled());
     }
     
-    private static testMethod void it_should_capture_the_correct_number_of_invocations_with_string_parameter(){
+    @isTest
+    static void it_should_capture_the_correct_number_of_invocations_with_string_parameter(){
         DerivedMock sut = new DerivedMock();
         
         sut.takesString('someArgument');
@@ -25,7 +26,8 @@ public class ApexMoqTests{
         System.assertEquals(3, call.timesCalled());
     }
     
-    private static testMethod void it_should_capture_the_correct_number_of_invocations_for_numbers(){
+    @isTest
+    static void it_should_capture_the_correct_number_of_invocations_for_numbers(){
         DerivedMock sut = new DerivedMock();
         
         sut.takesInteger(1);
@@ -37,7 +39,8 @@ public class ApexMoqTests{
         System.assertEquals(3, call.timesCalled());
     }
     
-    private static testMethod void it_should_capture_the_correct_number_of_invocations_for_non_primitives(){
+    @isTest
+    static void it_should_capture_the_correct_number_of_invocations_for_non_primitives(){
         DerivedMock sut = new DerivedMock();
         NonPrimitive np1 = new NonPrimitive();
         np1.strMember = 'np1';
@@ -58,7 +61,8 @@ public class ApexMoqTests{
         System.assertEquals(3, call.timesCalled());
     }
 
-    private static testMethod void it_should_assert_the_correct_number_of_invocations_with_string_parameter(){
+    @isTest
+    static void it_should_assert_the_correct_number_of_invocations_with_string_parameter(){
         DerivedMock sut = new DerivedMock();
         
         sut.takesString('someArgument');
@@ -72,7 +76,8 @@ public class ApexMoqTests{
         sut.verify('takesString', new List<Object>{'abcdefg'}).never();
     }
     
-    private static testMethod void it_should_return_the_default_call(){
+    @isTest
+    static void it_should_return_the_default_call(){
         DerivedMock sut = new DerivedMock();
         sut.setup('takesString',ApexMoq.Arguments.HAVE_ANY_VALUE).returns('abc');
         
@@ -80,8 +85,18 @@ public class ApexMoqTests{
         
         System.assertEquals('abc', returnValue);
     }
+
+    @isTest
+    static void it_should_verify_the_call_was_made_with_any_arguments(){
+        DerivedMock sut = new DerivedMock();
+        
+        sut.takesString('123');
+        
+        sut.verify('takesString',ApexMoq.ARGUMENTS_HAVE_ANY_VALUE).once();
+    }
     
-    private static testMethod void it_should_return_the_setup_call_instead_of_the_default_one(){
+    @isTest
+    static void it_should_return_the_setup_call_instead_of_the_default_one(){
         DerivedMock sut = new DerivedMock();
         sut.setup('takesString',ApexMoq.Arguments.HAVE_ANY_VALUE).returns('abc');
         sut.setup('takesString',new List<Object> {'123'}).returns('xyz');        
@@ -91,15 +106,43 @@ public class ApexMoqTests{
         System.assertEquals('xyz', returnValue);
     }
     
-    private static testMethod void it_should_return_null_when_no_setup_was_performed(){
+    @isTest
+    static void it_should_return_null_when_no_setup_was_performed(){
         DerivedMock sut = new DerivedMock(); 
         
         String returnValue = sut.takesString('123');
         
         System.assertEquals(null, returnValue);
     }
+    
+    @isTest
+    static void it_should_throw_the_setup_exception(){
+        DerivedMock sut = new DerivedMock();
+        sut.setup('takesString',new List<Object> {'123'}).throws(new TestException('test exception msg'));        
 
-    private static testMethod void it_should_return_different_values_when_setup_sequence_is_called(){
+        try{
+            String returnValue = sut.takesString('123');
+            System.assert(false);
+        }catch(Exception ex){
+            System.assertEquals('test exception msg', ex.getMessage());
+        }
+    }
+
+    @isTest
+    static void it_should_throw_the_setup_exception_with_have_any_parameters_argument(){
+        DerivedMock sut = new DerivedMock();
+        sut.setup('takesString',ApexMoq.ARGUMENTS_HAVE_ANY_VALUE).throws(new TestException('test exception msg'));        
+
+        try{
+            String returnValue = sut.takesString('123');
+            System.assert(false);
+        }catch(Exception ex){
+            System.assertEquals('test exception msg', ex.getMessage());
+        }
+    }
+
+    @isTest
+    static void it_should_return_different_values_when_setup_sequence_is_called(){
         DerivedMock sut = new DerivedMock();
         sut.setupSequence('takesNothing')
             .returns('abc')
@@ -115,7 +158,8 @@ public class ApexMoqTests{
         System.assertEquals('ghi', returnValue3);
     }
 
-    private static testMethod void it_should_verify_when_the_previously_passed_argument_is_changed(){
+    @isTest
+    static void it_should_verify_when_the_previously_passed_argument_is_changed(){
         NonPrimitive changingObject = new NonPrimitive();
         changingObject.strMember = '1';
 
@@ -131,7 +175,8 @@ public class ApexMoqTests{
         System.assertEquals(1,timesCalled);
     }
 
-    private static testMethod void it_should_return_the_same_object_even_when_changed_between_invocations(){
+    @isTest
+    static void it_should_return_the_same_object_even_when_changed_between_invocations(){
         //TODO: Is this possible to implement?
         
         //NonPrimitive changingObject = new NonPrimitive();
@@ -178,4 +223,6 @@ public class ApexMoqTests{
         public Integer intMember;
         public Double dblMember;
     }
+    
+    private class TestException extends Exception {}
 }

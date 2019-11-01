@@ -1,5 +1,5 @@
 # ApexMoq
-### Inspired by the Moq library for .NET, for use with Salesforce/Apex programming unit testing
+### Inspired by the Moq library for .NET, for use with Salesforce/Apex unit testing
 
 So there's an interface defined that you'd like to be able to mock:
 ```

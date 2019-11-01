@@ -1,5 +1,5 @@
-ApexMoq - a "port" of Moq for Salesforce/Apex
-
+#ApexMoq
+### inspired by the Moq library for .NET, for use with Salesforce/Apex programming unit testing
 useage:
 
 MockOfSomeInterface mock = new MockOfSomeInterface();

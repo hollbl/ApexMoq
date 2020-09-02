@@ -46,7 +46,7 @@ public virtual class ApexMoq {
         // }
         
         public void times(Integer expected) {
-            if(timesCalled <> expected){
+            if (timesCalled <> expected) {
                 String msg = 'Expected invocation of method ' + methodName + '(' + String.valueOf(arguments) + ') on Mock ' + String.valueOf(expected) + ' times, but invocation was made ' + String.valueOf(timesCalled) + ' times.';
                 System.assert(false, msg);
             }
@@ -57,7 +57,7 @@ public virtual class ApexMoq {
         // }
         
         public void atLeast(Integer expected) {
-            if(timesCalled < expected){
+            if (timesCalled < expected) {
                 String msg = 'Expected invocation of method ' + methodName + '(' + String.valueOf(arguments) + ') on Mock at least ' + String.valueOf(expected) + ' times, but invocation was made ' + String.valueOf(timesCalled) + ' times.';
                 System.assert(false, msg);
             }
@@ -80,12 +80,12 @@ public virtual class ApexMoq {
         // }
     }
     
-    private final Integer hashCode = System.hashCode(this);
+    private final Integer hashCode = System.hashCode(this);  //TODO: this isn't used I don't think.
     private Object DEFAULT_RETURN_VALUE = null;
-    private Map<String,List<Invocation>> setups = new Map<String,List<Invocation>>();
-    private Map<String,List<Invocation>> defaultSetups = new Map<String,List<Invocation>>();
-    private Map<String,List<Invocation>> invocations = new Map<String,List<Invocation>>();
-    private Map<String,List<List<Object>>> argumentsByMethodName = new Map<String,List<List<Object>>>();
+    private Map<String, List<Invocation>> setups = new Map<String, List<Invocation>>();
+    private Map<String, List<Invocation>> defaultSetups = new Map<String, List<Invocation>>();
+    private Map<String, List<Invocation>> invocations = new Map<String, List<Invocation>>();
+    private Map<String, List<List<Object>>> argumentsByMethodName = new Map<String, List<List<Object>>>();
     
     public ISetupInvocation setup(String methodName) {
         return setup(methodName, (List<Object>)null);
@@ -158,7 +158,6 @@ public virtual class ApexMoq {
         return testCall;
     }
 */
-    //TODO: Replace the verify methods that return IVerifyInvocation with these for Times.Once as default
     public void verify(String methodName) {
         verify(methodName, Times.Once);
     }
@@ -234,7 +233,9 @@ public virtual class ApexMoq {
         Invocation thisCall = recordInvocation(methodName,arguments);
         thisCall.returnValue = getReturnValue(thisCall);
         thisCall.throwValue = getThrowValue(thisCall);
-        if(thisCall.throwValue != null) throw thisCall.throwValue;
+        if (thisCall.throwValue != null) {
+            throw thisCall.throwValue;
+        }
         return thisCall.returnValue;
     }
     
@@ -244,7 +245,7 @@ public virtual class ApexMoq {
         setup.arguments = String.valueOf(arguments);
         
         if (!setups.containsKey(invocationKey(setup))) {
-            setups.put(invocationKey(setup),new List<Invocation>());
+            setups.put(invocationKey(setup), new List<Invocation>());
         }
         setups.get(invocationKey(setup)).add(setup);
         return setup;
@@ -252,8 +253,9 @@ public virtual class ApexMoq {
     
     private Invocation addSetupAsDefault(String methodName) {
         Invocation setup = addSetup(methodName, null);
+        
         if (!defaultSetups.containsKey(invocationKey(setup))) {
-            defaultSetups.put(invocationKey(setup),new List<Invocation>());
+            defaultSetups.put(invocationKey(setup), new List<Invocation>());
         }
         defaultSetups.get(invocationKey(setup)).add(setup);
         log('...Setup Invocation As Default: ' + setup);
@@ -267,7 +269,7 @@ public virtual class ApexMoq {
         call.timesCalled = 1;
         
         if(!invocations.containsKey(invocationKey(call))) {
-            invocations.put(invocationKey(call),new List<Invocation>());
+            invocations.put(invocationKey(call), new List<Invocation>());
         }
         
         Boolean registeredToPreviousCall = false;
@@ -301,7 +303,7 @@ public virtual class ApexMoq {
         if (setups.get(invocationKey) != null) {
             for (Invocation setupCall : setups.get(invocationKey)) {
                 log('......Comparing setup to actual arguments...');
-                if (allArgumentsMatch(actualCall,setupCall)) {
+                if (allArgumentsMatch(actualCall, setupCall)) {
                     log('.........Found match!');
                     if (setupCall.isSequence) {
                         if (setupCall.returnValues.size() >= actualCall.timesCalled) {

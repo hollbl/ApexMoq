@@ -8,18 +8,6 @@ public virtual class ApexMoq {
        ISetupInvocation throws(Exception setThrowValue);
     }
 
-    // public interface IVerifyInvocation {
-    //     void times(Integer expected);
-    //     void atLeastOnce();
-    //     void atLeast(Integer expected);
-    //     void never();
-    //     void once();
-    //     void twice();
-    //     void thrice();
-    //     Integer timesCalled();
-    // }
-
-    // private class Invocation implements ISetupInvocation, IVerifyInvocation {
     private class Invocation implements ISetupInvocation {
         public String methodName;
         public String arguments;
@@ -41,10 +29,6 @@ public virtual class ApexMoq {
             return this;
         }
 
-        // public Integer timesCalled() {
-        //     return timesCalled;
-        // }
-        
         public void times(Integer expected) {
             if (timesCalled <> expected) {
                 String msg = 'Expected invocation of method ' + methodName + '(' + String.valueOf(arguments) + ') on Mock ' + String.valueOf(expected) + ' times, but invocation was made ' + String.valueOf(timesCalled) + ' times.';
@@ -52,35 +36,14 @@ public virtual class ApexMoq {
             }
         }
         
-        // public void atLeastOnce() {
-        //     atLeast(1);
-        // }
-        
         public void atLeast(Integer expected) {
             if (timesCalled < expected) {
                 String msg = 'Expected invocation of method ' + methodName + '(' + String.valueOf(arguments) + ') on Mock at least ' + String.valueOf(expected) + ' times, but invocation was made ' + String.valueOf(timesCalled) + ' times.';
                 System.assert(false, msg);
             }
         }
-        
-        // public void never() {
-        //     times(0);
-        // }
-        
-        // public void once() {
-        //     times(1);
-        // }
-
-        // public void twice() {
-        //     times(2);
-        // }
-
-        // public void thrice() {
-        //     times(3);
-        // }
     }
     
-    private final Integer hashCode = System.hashCode(this);  //TODO: this isn't used I don't think.
     private Object DEFAULT_RETURN_VALUE = null;
     private Map<String, List<Invocation>> setups = new Map<String, List<Invocation>>();
     private Map<String, List<Invocation>> defaultSetups = new Map<String, List<Invocation>>();
@@ -117,47 +80,6 @@ public virtual class ApexMoq {
         return scenario;
     }
 
-/*
-    public IVerifyInvocation verify(String methodName){
-        return verify(methodName,new List<Object>());
-    }  
-    
-    public IVerifyInvocation verify(String methodName, List<Object> arguments){
-        if(arguments.size() == 0) arguments = null;
-
-        Invocation testCall = new Invocation();
-        testCall.methodName = methodName;
-        testCall.arguments = String.valueOf(arguments);
-
-        log('Verify => ' + testCall);
-        
-        if(invocations.containsKey(invocationKey(testCall))){
-            for(Invocation call : invocations.get(invocationKey(testCall))){
-                if(allArgumentsMatch(call, testCall)){
-                    return call;
-                }
-            }
-        }
-
-        return testCall;
-    }   
-
-    public IVerifyInvocation verify(String methodName, Arguments anyArgs){
-        Invocation testCall = new Invocation();
-        testCall.methodName = methodName;
-        testCall.arguments = '{{Arguments.HAVE_ANY_VALUE}}';
-
-        log('Verify => ' + testCall);
-        
-        if(invocations.containsKey(invocationKey(testCall))){
-            for(Invocation call : invocations.get(invocationKey(testCall))){
-                testCall.timesCalled += call.timesCalled;
-            }
-        }
-
-        return testCall;
-    }
-*/
     public void verify(String methodName) {
         verify(methodName, Times.Once);
     }
@@ -379,6 +301,6 @@ public virtual class ApexMoq {
     }
 
     private static void log(Object content) {
-        System.debug('###apexmoq### ' + String.valueOf(content));
+        System.debug('###ApexMoq### ' + String.valueOf(content));
     }
 }

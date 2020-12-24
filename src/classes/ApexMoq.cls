@@ -29,14 +29,14 @@ public virtual class ApexMoq {
             return this;
         }
 
-        public void times(Integer expected) {
+        private void times(Integer expected) {
             if (timesCalled <> expected) {
                 String msg = 'Expected invocation of method ' + methodName + '(' + String.valueOf(arguments) + ') on Mock ' + String.valueOf(expected) + ' times, but invocation was made ' + String.valueOf(timesCalled) + ' times.';
                 System.assert(false, msg);
             }
         }
         
-        public void atLeast(Integer expected) {
+        private void atLeast(Integer expected) {
             if (timesCalled < expected) {
                 String msg = 'Expected invocation of method ' + methodName + '(' + String.valueOf(arguments) + ') on Mock at least ' + String.valueOf(expected) + ' times, but invocation was made ' + String.valueOf(timesCalled) + ' times.';
                 System.assert(false, msg);
@@ -44,6 +44,7 @@ public virtual class ApexMoq {
         }
     }
     
+    private final Integer hashCode = System.hashCode(this);
     private Object DEFAULT_RETURN_VALUE = null;
     private Map<String, List<Invocation>> setups = new Map<String, List<Invocation>>();
     private Map<String, List<Invocation>> defaultSetups = new Map<String, List<Invocation>>();
@@ -55,7 +56,7 @@ public virtual class ApexMoq {
     }
     
     public ISetupInvocation setup(String methodName, List<Object> arguments) {
-        Invocation scenario = addSetup(methodName,arguments);
+        Invocation scenario = addSetup(methodName, arguments);
         return scenario;
     }
     
@@ -69,7 +70,7 @@ public virtual class ApexMoq {
     }
 
     public ISetupInvocation setupSequence(String methodName, List<Object> arguments) {
-        Invocation scenario = addSetup(methodName,arguments);
+        Invocation scenario = addSetup(methodName, arguments);
         scenario.isSequence = true;
         return scenario;
     }
@@ -97,7 +98,7 @@ public virtual class ApexMoq {
     }
     
     public void verify(String methodName, List<Object> arguments, Times times) {
-        if (arguments.size() == 0) { arguments = null; }
+        if (arguments.size() == 0) {arguments = null;}
 
         Invocation testCall = new Invocation();
         testCall.methodName = methodName;
@@ -152,12 +153,10 @@ public virtual class ApexMoq {
     
     protected Object handleMethodInvocation(String methodName, List<Object> arguments) {
         log('Method Invoked => "' + methodName + '" ' + string.valueOf(arguments));
-        Invocation thisCall = recordInvocation(methodName,arguments);
+        Invocation thisCall = recordInvocation(methodName, arguments);
         thisCall.returnValue = getReturnValue(thisCall);
         thisCall.throwValue = getThrowValue(thisCall);
-        if (thisCall.throwValue != null) {
-            throw thisCall.throwValue;
-        }
+        if (thisCall.throwValue != null) {throw thisCall.throwValue;}
         return thisCall.returnValue;
     }
     
@@ -190,8 +189,8 @@ public virtual class ApexMoq {
         call.arguments = String.valueOf(arguments);
         call.timesCalled = 1;
         
-        if(!invocations.containsKey(invocationKey(call))) {
-            invocations.put(invocationKey(call), new List<Invocation>());
+        if (!invocations.containsKey(invocationKey(call))) {
+            invocations.put(invocationKey(call),new List<Invocation>());
         }
         
         Boolean registeredToPreviousCall = false;
@@ -207,7 +206,7 @@ public virtual class ApexMoq {
             invocations.get(invocationKey(call)).add(call);
         }
 
-        recordInvocationByMethodName(methodName,arguments);
+        recordInvocationByMethodName(methodName, arguments);
         
         return call;
     }
@@ -270,6 +269,7 @@ public virtual class ApexMoq {
                 }                    
             }           
         }
+        
         log('......Returning default return value (' + String.valueOf(DEFAULT_RETURN_VALUE) + ') because no was setup found for this call');
         return DEFAULT_RETURN_VALUE;
     }
@@ -279,7 +279,7 @@ public virtual class ApexMoq {
         String invocationKey = invocationKey(actualCall);
         if (setups.get(invocationKey) != null) {
             for (Invocation setupCall : setups.get(invocationKey)) {
-                if (allArgumentsMatch(actualCall,setupCall)) {
+                if (allArgumentsMatch(actualCall, setupCall)) {
                     return setupCall.throwValue;
                 }
             }
@@ -293,7 +293,10 @@ public virtual class ApexMoq {
     }
     
     private Boolean allArgumentsMatch(Invocation call1, Invocation call2) {
-        return (call1.arguments == call2.arguments);
+        if (call1.arguments == null || call2.arguments == null) {
+            return (call1.arguments == call2.arguments);
+        }
+        return (call1.arguments.equals(call2.arguments));
     }
 
     private String invocationKey(Invocation call) {
@@ -301,6 +304,6 @@ public virtual class ApexMoq {
     }
 
     private static void log(Object content) {
-        System.debug('###ApexMoq### ' + String.valueOf(content));
+        System.debug('###apexmoq### ' + String.valueOf(content));
     }
 }
